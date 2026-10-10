@@ -9,13 +9,9 @@ As AI agents take on longer and more complex semi-autonomous tasks, they occasio
 
 This suboptimal, unhuman interaction style increases cognitive fatigue and leads to more user errors. (*)
 
-A  that instruct the agent to spot every multi-issue multi-ask handsover to the user and re-present it, one issue or ask at the time, with enough context and explanation, gets quickly forgotten after a few messages.
-Using an  to ask the agent to check at every message, is excessively expensive and time consuming.
-Whatsmore, the detection by the agent of which messages require this type of pacing is also fuzzy.
+A **Skill** that instructs the agent to spot these multi-issue, multi-ask handovers and present them one at a time, with proper context and explanation, is quickly forgotten after a few turns. Conversely, using a **hook** to force the agent to check every message is excessively expensive and slow. Furthermore, an AI agent's ability to identify which messages actually require this kind of pacing is unreliable.
 
-A **Skills** that instructs the agent to spot these multi-issue handovers and present them one at a time, with proper context and explanation, is quickly forgotten after a few turns. Conversely, using a **hook** to force the agent to check every message is excessively expensive and slow. Furthermore, an AI agent's ability to identify which messages actually require this kind of pacing is unreliable.
-
-Jev, on the other hand, accurately identifies which messages need step-by-step pacing, and invoking Jev on every message is both fast and cheap.
+The [System One Jev model from TypeSafe AI](https://typesafe.ai/), on the other hand, accurately identifies which messages need step-by-step pacing, and invoking Jev on every message is both fast and cheap.
 
 (*) [How to Reduce Cognitive Fatigue in AI-to-Human Handover](https://www.smharter.ai/blog/2026/10/09/how-to-reduce-cognitive-fatigue-in-ai-to-human-handover/)
 
