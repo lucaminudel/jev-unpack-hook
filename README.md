@@ -1,7 +1,7 @@
 [![Jev Compatible](https://img.shields.io/badge/Jev-v1.13+-blue)](https://typesafe.ai)
 [![Supported Agents](https://img.shields.io/badge/Agents-Claude%20Code%20%7C%20Codex-green)](https://developers.openai.com/)
 
-# Jev Unpack: a CodeX Stop hook that detects multi-topic multi-ask agent messages and paces conversations one ask at a time, adding relevant content and missing info
+# Jev Unpack: a CodeX Stop hook that detects multi-topic multi-ask agent messages and paces conversations one ask at a time, adding relevant context and missing info
 
 ## The purpose of this Jev powered hook
 
