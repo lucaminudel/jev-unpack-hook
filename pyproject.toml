@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jev-unpack-hook"
+version = "1.0.0"
+description = "A Jev-powered hook that intercepts multi-topic agent responses and enforces one-issue-at-a-time conversation pacing."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+keywords = [
+    "jev",
+    "typesafe-ai",
+    "codex",
+    "claude-code",
+    "agent-hooks",
+    "system-one",
+]
+authors = [
+    { name = "lucaminudel" }
+]
+
+dependencies = [
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[project.scripts]
+jev-unpack = "jev_unpack.interaction_protocol_review_with_jev:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
