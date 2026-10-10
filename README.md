@@ -1,17 +1,25 @@
+[![Jev](https://img.shields.io/badge/TypeSafe-Jev-e551ba?style=flat-square)](https://docs.typesafe.ai/introduction)
 [![Jev Compatible](https://img.shields.io/badge/Jev-v1.13+-blue)](https://typesafe.ai)
-[![Supported Agents](https://img.shields.io/badge/Agents-Claude%20Code%20%7C%20Codex-green)](https://developers.openai.com/)
+[![Supported Agents](https://img.shields.io/badge/Agents-Claude%20Code%20%7C%20Codex-green)](https://github.com/lucaminudel/jev-unpack-hook/#hook-installation-instructions)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-3776ab?style=flat-square)](https://typesafe.ai)
+[![MIT License](https://img.shields.io/badge/license-MIT-5a4a63?style=flat-square)](https://www.python.org/)
 
-# Jev Unpack: a CodeX Stop hook that detects multi-topic multi-ask agent messages and paces conversations one ask at a time, adding relevant context and missing info
+# Jev Unpack: a CodeX & Cloude Stop hook that detects multi-topic multi-ask agent messages and paces conversations one ask at a time, adding useful context and info
 
-## The purpose of this Jev powered hook
+<div align="center">
+  <img src="jev-unpak-hook.png" alt="Jev-unpack-hook">
+  <br/>
+</div>
 
-As AI agents take on longer and more complex semi-autonomous tasks, they occasionally message the user out of the blue to ask for missing information, clarification, confirmation, feedback, choices, or approvals. These interruptions often take the form of a list containing multiple disparate issues and requests, lacking adequate context and clear explanations.
+## The purpose of this Jev-powered Stop hook
+
+As AI agents take on longer and more complex semi-autonomous tasks, they occasionally message the user out of the blue to ask for missing information, clarification, confirmation, feedback, choices, or approvals. These interruptions often take the form of a list containing multiple disparate issues and requests, lacking adequate context and a clear explanation.
 
 This suboptimal, unhuman interaction style increases cognitive fatigue and leads to more user errors. (*)
 
-A **Skill** that instructs the agent to spot these multi-issue, multi-ask handovers and present them one at a time, with proper context and explanation, is quickly forgotten after a few turns. Conversely, using a **hook** to force the agent to check every message is excessively expensive and slow. Furthermore, an AI agent's ability to identify which messages actually require this kind of pacing is unreliable.
+A **Skill** that instructs the agent to spot these multi-issue, multi-ask handovers and present them one ask at a time, with proper context and explanation, is quickly forgotten after a few turns. Conversely, using a **hook** to force the agent to check every message is excessively expensive and slow. Furthermore, an AI agent's ability to identify which messages actually require this kind of pacing is unreliable.
 
-The [System One Jev model from TypeSafe AI](https://typesafe.ai/), on the other hand, accurately identifies which messages need step-by-step pacing, and invoking Jev on every message is both fast and cheap.
+The System One [Jev](https://docs.typesafe.ai/introduction/quickstart) model from [TypeSafe AI](https://typesafe.ai/), on the other hand, accurately identifies which messages need step-by-step pacing, and invoking Jev on every message is both fast and cheap.
 
 (*) [How to Reduce Cognitive Fatigue in AI-to-Human Handover](https://www.smharter.ai/blog/2026/10/09/how-to-reduce-cognitive-fatigue-in-ai-to-human-handover/)
 
@@ -25,7 +33,7 @@ For a longer message, the hook sends the message to the TypeSafe System One endp
 1. How many Asks does the message contain: `Zero`, `One`, or `Two_or_more`?
 2. How many Points does it contain: `Single_point`, `Two_or_three_points`, or `More_than_three_points`?
 
-The hook validates both returned choices and their confidence values before making a routing decision:
+The hook validates both returned choices and their confidence values before making a routing decision, following the TypeSafe [Confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing) patttern:
 
 - If Jev returns `Two_or_more` Asks and `More_than_three_points` with confidence of at least `0.80` for both answers, the hook blocks the normal stop and supplies the one-issue-at-a-time continuation instructions.
 - If the same classification has confidence of at least `0.50` but below `0.80`, the hook blocks with a cautious confirmation prompt asking whether the user wants to go through the points one at a time.
@@ -33,9 +41,27 @@ The hook validates both returned choices and their confidence values before maki
 
 The hook also prevents a loop when the agent invokes the `Stop` hook again for its continuation by allowing events with `stop_hook_active` to continue immediately.
 
-## CodeX hook installation instructions
+## Try it
+
+To try it you need CodeX or Claude Code, a [TypeSafe API key](https://console.typesafe.ai/settings/keys), `python3` version 3.9+ (check from the command line with `python3 --version`, when not pre-installed on your system, it may trigger a prompt to install it). 
+
+Then you can follow the installation instructions below where you will:
+
+- copy the hook command file in the right directory
+- configure it
+  - securely store the TypeSafe API key in an environment varialbe or better, in secure storage
+  - change the TypeSafe API access url, if you are using Jev via a different Jev provider
+  - activate the hook in CodeX or Claude Code
+- install a python dependency (`python-dotenv`)
+
+## Hook installation instructions
+
+### For CodeX
+
+#### Copy the command file to the hooks directory
 
 Copy `src/jev_unpack/interaction_protocol_review_with_jev.py` to the Codex hooks directory.
+Where the hooks directory is not already present, create that directory first.
 
 For one project, copy it to:
 
@@ -55,12 +81,13 @@ The hook imports `python-dotenv`. Install that dependency for the Python interpr
 python3 -m pip install --user python-dotenv
 ```
 
+#### Enable and trust the hook in CodeX GUI
 
-### Enable and trust the hook in CodeX GUI
-
-For one project, copy the file `codex project hooks.json` in the project folder mentioned before, next to the hook file you have copied before.
-For all user project, copy the file `codex global hooks.json` in the user's folder mentioned before, next to the hook file you have copied before.
+To install the hook for one specific project, copy the file `codex project hooks.json` in the `<project>/.codex/` project directory mentioned before, next to the hook dicrectory.
+For all user project, copy the file `codex global hooks.json` in the `~/.codex/` in the user's directory mentioned before, next to the hook directory.
 Then rename the file to `hooks.json`.
+If a `hooks.json` file already exists, just copy the relevant json part (from `codex project hooks.json` for a project and from `codex global hooks.json` for the user) into the existing hooks file instead.
+Then:
 
 1. Open Codex GUI.
 2. Open Settings.
@@ -70,7 +97,7 @@ Then rename the file to `hooks.json`.
 
 Review the displayed command and file path before trusting it. Codex may require trust again after the hook file changes.
 
-### Enable and trust the hook in CodeX CLI
+#### Enable and trust the hook in CodeX CLI
 
 Start Codex from a terminal:
 
@@ -86,7 +113,7 @@ Then run this command inside Codex:
 
 Find the copied hook, review it, and enable or trust it. The CLI can also disable the hook from the same screen.
 
-## Claude Code hook installation instructions
+### For Claude Code
 
 To be done.
 
@@ -105,11 +132,17 @@ The hook reads the API key in this order:
 
 To set the environment variable:
 
-- copy the `.env.example` file next to the hook file you copied before, in the project foleder or in the user folder.
+- copy the `.env.example` file next to the hook file you copied before, in the project directori or in the user directory.
 - edit the file and replace the text `your_real_api_key` with your API
 - rename the file to `.env`
 
-Do not commit `.env` or share it, keep your key private. 
+Do not commit `.env` or share it, keep your key private.
+If you are using CodeX or Claude CLI via a terminal environment, you can do this instead:
+
+```bash
+export TYPESAFE_API_KEY=apikey_...
+# Launch CodeX CLI or Claude Code 
+```
 
 Keychain is a macOS secure storage, that can be used instead of the .env file.
 You can store your API key in Keychain under the "typesafe_api_key" application password.
