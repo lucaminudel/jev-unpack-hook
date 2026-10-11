@@ -6,7 +6,7 @@
           {
             "type": "command",
             "command": "/usr/bin/python3 \"$HOME/.codex/hooks/interaction_protocol_review_with_jev.py\"",
-            "statusMessage": "Response handover checked for multiple requests and issues with the hook: Interaction Protocol Review with Jev .",
+            "statusMessage": "Response handover checked for multiple requests and issues with the hook: Interaction Protocol Review with Jev.",
             "timeout": 90
           }
         ]

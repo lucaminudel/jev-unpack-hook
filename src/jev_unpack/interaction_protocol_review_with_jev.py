@@ -1,11 +1,11 @@
 """Interaction Protocol Review with Jev: identify and respond to multiple complex requests 
    with a prompt that breaks down the complex message into single question messages
 
-The Codex Stop hook receives the latest assistant message. It allows short
-messages to finish without an external call. For longer messages it reads a
-TypeSafe API key , asks Jev to classify the number of Asks and Points, and
- returns the editable continuation prompt only when the classification matches
- the interaction-protocol rule. .
+The Codex / Claude Code Stop hook receives the latest assistant message. It allows
+short messages to finish without an external call. For longer messages it reads a
+TypeSafe API key, asks Jev to classify the number of Asks and Points, and 
+returns the editable continuation prompt only when the classification matches 
+the interaction-protocol rule.
 
 Set DEBUG_LOGGING_ON to True while diagnosing the hook. When enabled, the hook
 appends input messages, skip decisions, Jev responses, and error details to the
@@ -34,7 +34,7 @@ HOOK_VERSION = "1.0.0"
 # Enable temporarily when diagnosing this hook behavior.
 # DEBUG_LOGGING_ON = True
 DEBUG_LOGGING_ON = False
-DEBUG_LOGGING_PATH = Path.cwd() / ".codex_stop_messages.jsonl"
+DEBUG_LOGGING_PATH = Path.cwd() / ".jev-unpack-hook_stop_messages_logs.jsonl"
 
 # ################################################################# #
 # ################################################################# #
@@ -45,26 +45,26 @@ DEBUG_LOGGING_PATH = Path.cwd() / ".codex_stop_messages.jsonl"
 # ################################################################# #
 #
 #
-# Confibure the TypeSafe's Jev API url
+# Configure the TypeSafe's Jev API url
 # based on where you have the account.
 # After this, look below to set where to read your TypeSafe API key.
 TYPESAFE_API_URL = "https://api.typesafe.ai/v1/systemone"
 
 
-# Constants used to calculate when a message is to short to be considered
+# Constants used to calculate when a message is too short to be considered
 MINIMUM_MESSAGE_LINES_TO_TRIGGER_A_REVIEW = 6
 SCREEN_WIDTH_CHARACTERS = 160
 MINIMUM_MESSAGE_CHARACTERS_TO_TRIGGER_A_REVIEW = (
     SCREEN_WIDTH_CHARACTERS * MINIMUM_MESSAGE_LINES_TO_TRIGGER_A_REVIEW
 )
 
-# Thresholds for the Jev Confidence-gated routing pattern implemeted below
+# Thresholds for the Jev Confidence-gated routing pattern implemented below
 AUTO_CONTINUE_MIN_CONFIDENCE = 0.80
 CAUTIOUS_CONFIRMATION_MIN_CONFIDENCE = 0.50
 
 # Retry configuration for all the external calls
-# The number of retry attemps and delay between retries adds up to less then 60 sec
-# Keep the command hook timeout in .codex/hooks.json at or above 90 seconds.
+# The number of retry attempts and delay between retries adds up to less then 60 sec
+# Keep the command hook timeout in .codex/hooks.json and .claude/settings.json at or above 90 seconds.
 MAX_RETRY_ATTEMPTS = 3
 RETRY_DELAYS_SECONDS = (0.5, 1.0)
 KEYCHAIN_COMMAND_TIMEOUT_SECONDS = 5
@@ -103,7 +103,7 @@ Your response about the selected issue must contain:
    - explain the available options when a choice is required;
    - explain the practical consequences of those options.
 
-Keep the issue and the ask for the user clearly and unmistakable visually and graphically separated, better if you can use a colour, emoji, and.or icon.
+Keep the issue and the ask for the user clearly and unmistakable visually and graphically separated, better if you can use a colour, emoji, and/or icon.
 
 Do not ask about any remaining issues until the user has provided their response for the current issue.
 
@@ -111,7 +111,7 @@ After the user has responded to this follow-up message, continue with the remain
 presenting them one at a time and waiting for the user's response after each issue.
 """
 
-# Edit this message to change the automatic continuation prompt sent back to Codex after a handover.
+# Edit this message to change the automatic continuation prompt sent back to Codex / Claude Code after a handover.
 CONTINUATION_PROMPT_FOR_MULTI_REQUEST_MULTI_ISSUE_AGENT_MESSAGES = """\
 The previous response contains multiple independently answerable issues and asks.
 Do not present all of them together again.
@@ -158,8 +158,8 @@ def read_typesafe_api_key() -> str:
     # TypeSafe API key: 
     #     Set the environment variable TYPESAFE_API_KEY with your API key and makes it available here
     #     Or in macOS store your API key in Keychain under the "typesafe_api_key" application password
-    #     You can also implement the access to the API key from an alternative secure storage availalbe
-    #      frou your OS or your machine.
+    #     You can also implement the access to the API key from an alternative secure storage available
+    #     from your OS or your machine.
     #
     env_path = Path(__file__).resolve().parent / ".env"
     load_dotenv(env_path)

@@ -1,10 +1,10 @@
 [![Jev](https://img.shields.io/badge/TypeSafe-Jev-e551ba?style=flat-square)](https://docs.typesafe.ai/introduction)
 [![Jev Compatible](https://img.shields.io/badge/Jev-v1.13+-blue)](https://typesafe.ai)
-[![Supported Agents](https://img.shields.io/badge/Agents-Claude%20Code%20%7C%20Codex-green)](https://github.com/lucaminudel/jev-unpack-hook/#hook-installation-instructions)
+[![Supported Agents](https://img.shields.io/badge/Agents-CodeX%20%7C%20Claude%20Code-green)](https://github.com/lucaminudel/jev-unpack-hook/#hook-installation-instructions)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-3776ab?style=flat-square)](https://typesafe.ai)
 [![MIT License](https://img.shields.io/badge/license-MIT-5a4a63?style=flat-square)](https://www.python.org/)
 
-# Jev Unpack: a CodeX & Cloude Stop hook that detects multi-topic multi-ask agent messages and paces conversations one ask at a time, adding useful context and info
+# Jev Unpack: a CodeX & Claude Stop hook that detects multi-topic multi-ask agent messages and paces conversations one ask at a time, adding useful context and info
 
 <div align="center">
   <img src="jev-unpak-hook.png" alt="Jev-unpack-hook">
@@ -28,12 +28,12 @@ The System One [Jev](https://docs.typesafe.ai/introduction/quickstart) model fro
 The hook receives the latest agent message from the `Stop` event.
 Short messages of few lines are ignored.
 
-For a longer message, the hook sends the message to the TypeSafe System One endpoint, using its most recent stable, official release AKA `jev-latest`. The request asks Jev two structured *Choive* questions:
+For a longer message, the hook sends the message to the TypeSafe System One endpoint, using its most recent stable, official release AKA `jev-latest`. The request asks Jev two structured *Choice* questions:
 
 1. How many Asks does the message contain: `Zero`, `One`, or `Two_or_more`?
 2. How many Points does it contain: `Single_point`, `Two_or_three_points`, or `More_than_three_points`?
 
-The hook validates both returned choices and their confidence values before making a routing decision, following the TypeSafe [Confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing) patttern:
+The hook validates both returned choices and their confidence values before making a routing decision, following the TypeSafe [Confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing) pattern:
 
 - If Jev returns `Two_or_more` Asks and `More_than_three_points` with confidence of at least `0.80` for both answers, the hook blocks the normal stop and supplies the one-issue-at-a-time continuation instructions.
 - If the same classification has confidence of at least `0.50` but below `0.80`, the hook blocks with a cautious confirmation prompt asking whether the user wants to go through the points one at a time.
@@ -49,7 +49,7 @@ Then you can follow the installation instructions below where you will:
 
 - copy the hook command file in the right directory
 - configure it
-  - securely store the TypeSafe API key in an environment varialbe or better, in secure storage
+  - securely store the TypeSafe API key in an environment variable or better, in secure storage
   - change the TypeSafe API access url, if you are using Jev via a different Jev provider
   - activate the hook in CodeX or Claude Code
 - install a python dependency (`python-dotenv`)
@@ -61,7 +61,7 @@ Then you can follow the installation instructions below where you will:
 #### Copy the command file to the hooks directory
 
 Copy `src/jev_unpack/interaction_protocol_review_with_jev.py` to the Codex hooks directory.
-Where the hooks directory is not already present, create that directory first.
+Where the hooks directory is not present already, create that directory first.
 
 For one project, copy it to:
 
@@ -83,10 +83,10 @@ python3 -m pip install --user python-dotenv
 
 #### Enable and trust the hook in CodeX GUI
 
-To install the hook for one specific project, copy the file `codex project hooks.json` in the `<project>/.codex/` project directory mentioned before, next to the hook dicrectory.
-For all user project, copy the file `codex global hooks.json` in the `~/.codex/` in the user's directory mentioned before, next to the hook directory.
+To install the hook for one specific project, copy the file `codex project hooks.json` in the `<project>/.codex/` project directory mentioned before, next to the hook directory.
+For all user projects, copy the file `codex global hooks.json` in the `~/.codex/` in the user's directory mentioned before, next to the hook directory.
 Then rename the file to `hooks.json`.
-If a `hooks.json` file already exists, just copy the relevant json part (from `codex project hooks.json` for a project and from `codex global hooks.json` for the user) into the existing hooks file instead.
+If a `hooks.json` file already exists, just copy the relevant portion (from `codex project hooks.json` for a project and from `codex global hooks.json` for the user) into the existing hooks file instead.
 Then:
 
 1. Open Codex GUI.
@@ -115,13 +115,39 @@ Find the copied hook, review it, and enable or trust it. The CLI can also disabl
 
 ### For Claude Code
 
-To be done.
+#### Copy the command file to the hooks directory
+
+Copy `src/jev_unpack/interaction_protocol_review_with_jev.py` to the Claude Code hooks directory.
+Where the hooks directory is not present already, create that directory first.
+
+For one project, copy it to:
+
+```text
+<project>/.claude/hooks/interaction_protocol_review_with_jev.py
+```
+
+For all projects for your user, copy it to:
+
+```text
+~/.claude/hooks/interaction_protocol_review_with_jev.py
+```
+
+The hook imports `python-dotenv`. Install that dependency for the Python interpreter that runs the hook:
+
+```bash
+python3 -m pip install --user python-dotenv
+```
+
+#### Enable and trust the hook in Claude Code
+
+To install the hook for one specific project, copy the file `claude code project settings.json` in the `<project>/.claude/` project directory mentioned before, next to the hook directory.
+For all user projects, copy the file `claude code global settings.json` in the `~/.claude/` in the user's directory mentioned before, next to the hook directory.
+Then rename the file to `settings.json`.
+If a `settings.json` file already exists, just copy the relevant portion (from `claude code project settings.json` for a project and from `claude code global settings.json` for the user) into the existing settings file instead.
 
 ## How to configure the hook
 
 The hook has one required runtime configuration and several optional source-level settings.
-
-
 
 ### Required: TypeSafe API key
 
@@ -132,12 +158,12 @@ The hook reads the API key in this order:
 
 To set the environment variable:
 
-- copy the `.env.example` file next to the hook file you copied before, in the project directori or in the user directory.
-- edit the file and replace the text `your_real_api_key` with your API
+- copy the `.env.example` file next to the hook command file you copied before, in the project directory or in the user directory.
+- edit the file and replace the text `your_real_api_key` with your API key
 - rename the file to `.env`
 
 Do not commit `.env` or share it, keep your key private.
-If you are using CodeX or Claude CLI via a terminal environment, you can do this instead:
+If you are using CodeX or Claude Code CLI via a terminal environment, you can do this instead:
 
 ```bash
 export TYPESAFE_API_KEY=apikey_...
@@ -146,9 +172,9 @@ export TYPESAFE_API_KEY=apikey_...
 
 Keychain is a macOS secure storage, that can be used instead of the .env file.
 You can store your API key in Keychain under the "typesafe_api_key" application password.
-And the hool will use those when it does not find the environment variable set.
+And the hook will use this when it does not find the environment variable set.
 
-You may want to add a fall-back to a different secure storage as implemente by your OS ok 
+You may want to add a fall-back to a different secure storage as implemented by your OS or 
 password manager tool.
 
 ### Required: TypeSafe API access url
@@ -169,7 +195,7 @@ Debug logging is disabled by default:
 DEBUG_LOGGING_ON = False
 ```
 
-To diagnose the hook, temporarily set it to `True` in the copied file. The hook writes JSONL diagnostics to `.codex_stop_messages.jsonl` in its current working directory and does not log the API key. Turn logging off after diagnosis.
+To diagnose the hook, temporarily set it to `True` in the copied file. The hook writes JSONL diagnostics to `.jev-unpack-hook_stop_messages_logs.jsonl` in its current working directory and does not log the API key. Turn logging off after diagnosis.
 
 ## How to run the hook tests
 
